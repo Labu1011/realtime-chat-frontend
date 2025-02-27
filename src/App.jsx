@@ -1,24 +1,25 @@
 import React from "react";
+import Navbar from "./components/Navbar.jsx";
+import { Routes, Route } from "react-router-dom";
+
+import Homepage from "./pages/Homepage.jsx";
+import SignUpPage from "./pages/SignUpPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 
 const App = () => {
   return (
-    <div className="">
-      <div role="alert" className="alert alert-info">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          className="h-6 w-6 shrink-0 stroke-current"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <span>New software update available.</span>
-      </div>
+    <div>
+      <Navbar />
+
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Routes>
     </div>
   );
 };
