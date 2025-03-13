@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useChatStore } from "../store/useChatStore.js";
 import { useAuthStore } from "../store/useAuthStore.js";
 import ChatHeader from "./ChatHeader.jsx";
 import MessageInput from "./MessageInput.jsx";
 import MessageSkeleton from "./skeletons/MessageSkeleton.jsx";
+import { formatMessageTime } from "../lib/utils.js";
 
 const ChatContainer = () => {
   const {
@@ -15,6 +16,7 @@ const ChatContainer = () => {
     unsubscribeFromMessages,
   } = useChatStore();
   const { authUser } = useAuthStore();
+  const messageEndRef = useRef(null);
 
   if (isMessagesLoading) {
     return (
