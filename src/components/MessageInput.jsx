@@ -1,51 +1,56 @@
-import React, { useRef, useState } from "react";
-import { useChatStore } from "../store/useChatStore.js";
-import { Image, Send, X } from "lucide-react";
-import toast from "react-hot-toast";
+import React, { useRef, useState } from "react"
+import { useChatStore } from "../store/useChatStore.js"
+import { Image, Send, X } from "lucide-react"
+import toast from "react-hot-toast"
 
 const MessageInput = () => {
-  const [text, setText] = useState("");
-  const [imagePreview, setImagePreview] = useState(null);
-  const fileInputRef = useRef(null);
-  const { sendMessage } = useChatStore();
+  const [text, setText] = useState("")
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const fileInputRef = useRef(null)
+  const { sendMessage } = useChatStore()
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]
+    if (!file) return
     if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file.");
-      return;
+      toast.error("Please select an image file.")
+      return
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be <= 5MB.")
+      return
+    }
 
-    reader.readAsDataURL(file);
-  };
+    setImageFile(file)
+    setImagePreview(URL.createObjectURL(file))
+  }
 
   const removeImage = () => {
-    setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
+    setImagePreview(null)
+    if (fileInputRef.current) fileInputRef.current.value = ""
+  }
 
   const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!text.trim() && !imagePreview) return;
+    e.preventDefault()
+    if (!text.trim() && !imagePreview) return
+
+    const formData = new FormData()
+    formData.append("text", text.trim())
+    if (imageFile) formData.append("image", imageFile)
 
     try {
-      await sendMessage({
-        text: text.trim(),
-        image: imagePreview,
-      });
+      await sendMessage(formData)
 
-      setText("");
-      setImagePreview(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setText("")
+      setImageFile(null)
+      setImagePreview(null)
+      if (fileInputRef.current) fileInputRef.current.value = ""
     } catch (e) {
-      console.error("Failed to send message: ", e);
+      console.error("Failed to send message: ", e)
     }
-  };
+  }
 
   return (
     <div className="p-4 w-full">
@@ -106,6 +111,6 @@ const MessageInput = () => {
         </button>
       </form>
     </div>
-  );
-};
-export default MessageInput;
+  )
+}
+export default MessageInput

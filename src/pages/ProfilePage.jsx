@@ -1,24 +1,26 @@
-import React, { useState } from "react";
-import { useAuthStore } from "../store/useAuthStore.js";
-import { Camera, Mail, User } from "lucide-react";
+import React, { useState } from "react"
+import { useAuthStore } from "../store/useAuthStore.js"
+import { Camera, Mail, User } from "lucide-react"
 
 const ProfilePage = () => {
-  const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
-  const [selectedImage, setSelectedImage] = useState(null);
+  const { authUser, isUpdatingProfile, updateProfile } = useAuthStore()
+  const [selectedImage, setSelectedImage] = useState(null)
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]
+    if (!file) return
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
+    if (!file.type.startsWith("image/")) return
+    if (file.size > 5 * 1024 * 1024) return
 
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      setSelectedImage(base64Image);
-      await updateProfile({ profilePic: base64Image });
-    };
-  };
+    const localPreview = URL.createObjectURL(file)
+    setSelectedImage(localPreview)
+
+    const formData = new FormData()
+    formData.append("profilePic", file)
+
+    await updateProfile(formData)
+  }
 
   return (
     <div className="h-screen pt-20">
@@ -104,6 +106,6 @@ const ProfilePage = () => {
         </div>
       </div>
     </div>
-  );
-};
-export default ProfilePage;
+  )
+}
+export default ProfilePage
